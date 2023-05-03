@@ -1,0 +1,106 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
+public class DataBase : MonoBehaviour
+{
+
+    public List<Carta> mazo = new List<Carta>();
+    //public List<Carta> cartasObtenidas = new List<Carta>();
+    public GameObject[] cartas;//todas las cartas i ir poniendo en enable
+ 
+    public Carta[] cartasComunes;//20: 0-19
+    public int nCC;
+    public Carta[] cartasEpicas;//10: 20-29
+    public int nCE;
+    public Carta[] cartasLegendarias;//6: 30-35
+    public int nCL;
+    
+    public GameObject CartaPrefab;
+
+    public GameObject videoTiradaLeg;
+    public GameObject PanelCartaElegida;
+    public GameObject Summon;
+    public GameObject POV;
+
+    public bool jugar = false;
+    public TextMeshProUGUI Tdinero;
+    public int dinero;
+    // Start is called before the first frame update
+    void Start()
+    {
+        Tdinero.text = dinero.ToString();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    public void eliminarCartaMazo(Carta c){
+        mazo.Remove(c);
+    }
+
+    public void Tirar(){
+        videoTiradaLeg.SetActive(true);
+        StartCoroutine(Espera());
+        
+        if (dinero >= 100){
+            dinero -= 100;
+            Tdinero.text = dinero.ToString();
+            if(Random.value < 0.7f){
+                int carId = Random.Range(0, nCC);
+                Debug.Log(cartasComunes[carId]);
+                if(cartas[carId].GetComponent<Button>().interactable == false){
+                    cartas[carId].GetComponent<Button>().interactable = true;
+                }
+                else dinero += 50;
+            }
+            else if(Random.value < 0.95f){
+                int carId = Random.Range(0, nCE);
+                Debug.Log(cartasEpicas[carId]);
+                if(cartas[carId+20].GetComponent<Button>().interactable == false){
+                    cartas[carId+20].GetComponent<Button>().interactable = true;
+                }
+                else dinero += 50;
+            }
+            else{
+                int carId = Random.Range(0, nCL);
+                Debug.Log(cartasLegendarias[carId]);
+                if(cartas[carId+30].GetComponent<Button>().interactable == false){
+                    cartas[carId+30].GetComponent<Button>().interactable = true;
+                }
+                else dinero += 50;
+            }
+        }
+        GameObject c = Instantiate(CartaPrefab, Vector2.zero, Quaternion.identity);
+        c.transform.SetParent(POV.transform);
+        c.transform.localScale = Vector3.one;
+    }
+
+    IEnumerator Espera(){
+        yield return new WaitForSeconds(6);
+        videoTiradaLeg.SetActive(false);
+        PanelCartaElegida.SetActive(true);
+        Summon.SetActive(false);
+    }
+
+    public void AñadirMazo(Carta c){
+        mazo.Add(c);
+        if(mazo.Count > 7){
+            jugar = true;
+        }
+    }
+
+    public void EliminarMazo(Carta c){
+        if(mazo.Contains(c)){
+            mazo.Remove(c);
+        }
+        if(mazo.Count < 7 && jugar){
+            jugar = false;
+        }
+    }
+}

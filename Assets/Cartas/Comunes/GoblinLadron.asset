@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3465e77b7d32e7f4c8df909d3c4fe469, type: 3}
+  m_Name: GoblinLadron
+  m_EditorClassIdentifier: 
+  nombre: Goblin Ladron
+  descripcion: "El da\xF1o que hace si es al enemigo le roba el oro"
+  atk: 2
+  def: 2
+  oro: 5
+  num: 0
+  img: {fileID: 21300000, guid: 2b0e9a0a3d71f2d4fac9fa7d28c5e956, type: 3}
+  hechizo: 0
+  tipoCarta: 1
