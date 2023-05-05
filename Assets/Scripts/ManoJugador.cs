@@ -23,6 +23,7 @@ public class ManoJugador : MonoBehaviour
         oro = 30;
         vida = 30;
         RefrescarOro();
+        RefrescarVida();
     }
 
     // Update is called once per frame

@@ -63,6 +63,7 @@ public class CartasTablero : MonoBehaviour
 
     public void EmpezarTurno(){
         mj.oro += 5;
+        mj.RefrescarOro();
         mj.Robar();
         mj.Robar();
         mj.UtilizarCartas();
@@ -156,6 +157,7 @@ public class CartasTablero : MonoBehaviour
                     encontrado = true;
                     mazo[i].GetComponent<Button>().interactable = false;
                     mj.oro += mazo[i].GetComponent<AsignarCartaMano>().aMomentaneo;
+                    Debug.Log("atacar minaaaaa");
                     mj.RefrescarOro();
                 }
                 else i++;

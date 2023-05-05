@@ -418,11 +418,9 @@ GameObject:
   - component: {fileID: 7404775861178751343}
   - component: {fileID: 7404775861178751342}
   - component: {fileID: 1935770436123065270}
-  - component: {fileID: 4132180740433689446}
   - component: {fileID: 1547427571949837082}
-  - component: {fileID: 3016623514661177185}
   m_Layer: 5
-  m_Name: Carta Arbol
+  m_Name: CartaMuestra
   m_TagString: CartaMano
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -535,19 +533,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7404775861178751343}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 3016623514661177185}
-        m_TargetAssemblyTypeName: OnClicCarta, Assembly-CSharp
-        m_MethodName: LlamaAtacar
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 7404775861178751340}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1935770436123065270
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -566,25 +552,11 @@ MonoBehaviour:
   defText: {fileID: 5800913756239952979}
   oroText: {fileID: 6763534659339297311}
   img: {fileID: 7404775861405859144}
-  carta: {fileID: 11400000, guid: 7a730909cf3d61841b122c3244e73453, type: 2}
+  carta: {fileID: 0}
   aMomentaneo: 0
   dMomentaneo: 0
   puedeAtacar: 0
   puedeRevivir: 0
---- !u!114 &4132180740433689446
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7404775861178751340}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd357737b75db0e4c8ebcadf105b1b5b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  zona: {fileID: 0}
-  eliminar: 0
 --- !u!225 &1547427571949837082
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -597,20 +569,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &3016623514661177185
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7404775861178751340}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cfd5332db4043944ca704069e39fbcab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ct: {fileID: 0}
-  ci: {fileID: 0}
 --- !u!1 &7404775861192224205
 GameObject:
   m_ObjectHideFlags: 0
@@ -704,8 +662,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 8
-  m_fontSizeBase: 8
+  m_fontSize: 6
+  m_fontSizeBase: 6
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

@@ -20,7 +20,6 @@ public class DataBase : MonoBehaviour
     
     public GameObject CartaPrefab;
 
-    public GameObject videoTiradaLeg;
     public GameObject PanelCartaElegida;
     public GameObject Summon;
     public GameObject POV;
@@ -45,48 +44,60 @@ public class DataBase : MonoBehaviour
     }
 
     public void Tirar(){
-        videoTiradaLeg.SetActive(true);
-        StartCoroutine(Espera());
-        
+        //videoTiradaLeg.SetActive(true);
+        //StartCoroutine(Espera());
+        int n;
         if (dinero >= 100){
             dinero -= 100;
             Tdinero.text = dinero.ToString();
             if(Random.value < 0.7f){
                 int carId = Random.Range(0, nCC);
+                Instanciar(cartasComunes[carId]);
                 Debug.Log(cartasComunes[carId]);
                 if(cartas[carId].GetComponent<Button>().interactable == false){
                     cartas[carId].GetComponent<Button>().interactable = true;
                 }
                 else dinero += 50;
+                n = carId;
             }
             else if(Random.value < 0.95f){
                 int carId = Random.Range(0, nCE);
+                Instanciar(cartasEpicas[carId]);
                 Debug.Log(cartasEpicas[carId]);
                 if(cartas[carId+20].GetComponent<Button>().interactable == false){
                     cartas[carId+20].GetComponent<Button>().interactable = true;
                 }
                 else dinero += 50;
+                n = carId+20;
             }
             else{
                 int carId = Random.Range(0, nCL);
+                Instanciar(cartasLegendarias[carId]);
                 Debug.Log(cartasLegendarias[carId]);
                 if(cartas[carId+30].GetComponent<Button>().interactable == false){
                     cartas[carId+30].GetComponent<Button>().interactable = true;
                 }
                 else dinero += 50;
+                n = carId+30;
             }
         }
-        GameObject c = Instantiate(CartaPrefab, Vector2.zero, Quaternion.identity);
-        c.transform.SetParent(POV.transform);
-        c.transform.localScale = Vector3.one;
+        PanelCartaElegida.SetActive(true);
+        Summon.SetActive(false);
     }
 
-    IEnumerator Espera(){
+    private void Instanciar(Carta c){
+        GameObject g = Instantiate(CartaPrefab, Vector2.zero, Quaternion.identity);
+        g.transform.SetParent(POV.transform);
+        g.transform.localScale = Vector3.one;
+        g.GetComponent<AsignarCartaMano>().Asignar(c);
+    }
+
+    /*IEnumerator Espera(){
         yield return new WaitForSeconds(6);
         videoTiradaLeg.SetActive(false);
         PanelCartaElegida.SetActive(true);
         Summon.SetActive(false);
-    }
+    }*/
 
     public void AñadirMazo(Carta c){
         mazo.Add(c);

@@ -26,8 +26,9 @@ public class CartasIA : MonoBehaviour
     public CartasTablero ct;
     public DataBase db;
 
+    public GameObject Icono;
     public TextMeshProUGUI Vida;
-    public int oro = 40;
+    public int oro = 30;
     public int vidaIA = 30;
     private int nMano = 0;
 
@@ -37,28 +38,33 @@ public class CartasIA : MonoBehaviour
         Vida.text = vidaIA.ToString();
     }
 
-    public void IA_Planta(){
+    public void IA_Planta(Sprite img){
         CarIA = CarIAPlanta;
+        Icono.GetComponent<Image>().sprite = img;
         EmpezarPartida();
     }
 
-    public void IA_Humanos(){
+    public void IA_Humanos(Sprite img){
         CarIA = CarIAHumanos;
+        Icono.GetComponent<Image>().sprite = img;
         EmpezarPartida();
     }
 
-    public void IA_Goblins(){
+    public void IA_Goblins(Sprite img){
         CarIA = CarIAGoblins;
+        Icono.GetComponent<Image>().sprite = img;
         EmpezarPartida();
     }
 
-    public void IA_Criaturas(){
+    public void IA_Criaturas(Sprite img){
         CarIA = CarIACriaturas;
+        Icono.GetComponent<Image>().sprite = img;
         EmpezarPartida();
     }
 
-    public void IA_Abismo(){
+    public void IA_Abismo(Sprite img){
         CarIA = CarIAAbismo;
+        Icono.GetComponent<Image>().sprite = img;
         EmpezarPartida();
     }
 
@@ -154,8 +160,11 @@ public class CartasIA : MonoBehaviour
                 g.GetComponent<AsignarCartaMano>().ResetStats();
             }
             else{
+                Debug.Log(g.GetComponent<AsignarCartaMano>().carta.nombre);
+                Debug.Log(CarTabIA.Count);
                 CarTabIA.Remove(g);
                 Destroy(g);
+                Debug.Log(CarTabIA.Count);
             }
         }
         else{
@@ -360,7 +369,7 @@ public class CartasIA : MonoBehaviour
                 Destroy(o);
             } 
         }
-        oro = 40;
+        oro = 30;
         vidaIA = 30;
     }
 }
