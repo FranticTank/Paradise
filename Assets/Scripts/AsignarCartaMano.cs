@@ -25,7 +25,7 @@ public class AsignarCartaMano : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        Asignar(carta);
     }
 
     // Update is called once per frame

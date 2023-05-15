@@ -7,6 +7,7 @@ public class CartasTablero : MonoBehaviour
 {
 
     public List<GameObject> mazo = new List<GameObject>();
+    public List<GameObject> mazoCartasUsadas = new List<GameObject>();
 
     public ManoJugador mj;
     public CartasIA ci;
@@ -69,10 +70,11 @@ public class CartasTablero : MonoBehaviour
         mj.UtilizarCartas();
         //botonAcabar.GetComponent<Button>().interactable = true;
         Debug.Log(botonAcabar.GetComponent<Button>().interactable);
-        for(int i = 0; i < mazo.Count; i++){
-            mazo[i].GetComponent<Button>().interactable = true;
-            //El atk i la defensa no se tocan
+        for(int i = 0; i < mazoCartasUsadas.Count; i++){
+            mazoCartasUsadas[i].GetComponent<Button>().interactable = true;
+            mazo.Add(mazoCartasUsadas[i]);
         }
+        mazoCartasUsadas.Clear();
     }
 
     public void Atacar(GameObject g){
@@ -97,6 +99,7 @@ public class CartasTablero : MonoBehaviour
                 mj.oro = 0;
             }
             ci.oro += oroRobado;
+            ci.OroText.text = ci.oro.ToString();
             //Se tiene que mostrar el oro
         }
         else if(g.GetComponent<AsignarCartaMano>().carta.nombre == "Oni"){
@@ -148,7 +151,6 @@ public class CartasTablero : MonoBehaviour
     }
 
     public void AtacarMina(){
-        Debug.Log(atacante);
         if(atacante != null){
             int i = 0;
             bool encontrado = false;
@@ -159,6 +161,8 @@ public class CartasTablero : MonoBehaviour
                     mj.oro += mazo[i].GetComponent<AsignarCartaMano>().aMomentaneo;
                     Debug.Log("atacar minaaaaa");
                     mj.RefrescarOro();
+                    mazoCartasUsadas.Add(mazo[i]);
+                    mazo.RemoveAt(i);
                 }
                 else i++;
             }
@@ -198,7 +202,8 @@ public class CartasTablero : MonoBehaviour
                     mj.oro += oroRobado;
                     mj.RefrescarOro();
                 }
-                
+                mazoCartasUsadas.Add(mazo[i]);
+                mazo.RemoveAt(i);
             }
             else i++;
         }

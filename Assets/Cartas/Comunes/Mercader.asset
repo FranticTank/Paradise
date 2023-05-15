@@ -18,6 +18,6 @@ MonoBehaviour:
   def: 1
   oro: 4
   num: 0
-  img: {fileID: 0}
+  img: {fileID: 21300000, guid: d92e285426f8c874da13044743933228, type: 3}
   hechizo: 0
   tipoCarta: 0

@@ -10,6 +10,8 @@ public class CartasIA : MonoBehaviour
     public GameObject[] ManoIA = new GameObject[10];
     public GameObject CartaPrefab;
     public GameObject cartaArbol;
+    public GameObject cartaGuerrero;
+    public GameObject cartaEscudero;
     public GameObject zonaMano;
 
     public GameObject PanelGanar;
@@ -23,49 +25,63 @@ public class CartasIA : MonoBehaviour
 
     public List<GameObject> CarTabIA = new List<GameObject>();
 
+    public List<GameObject> Estrellas = new List<GameObject>();
+    private int nivel;
+
     public CartasTablero ct;
     public DataBase db;
 
     public GameObject Icono;
-    public TextMeshProUGUI Vida;
+    public TextMeshProUGUI VidaText;
+    public TextMeshProUGUI OroText;
     public int oro = 30;
     public int vidaIA = 30;
     private int nMano = 0;
 
+    private int cartaComun = 1;
+    private int cartaEpica = 3;
+    private int cartaLegendaria = 5;
+
     // Start is called before the first frame update
     void Start()
     {
-        Vida.text = vidaIA.ToString();
+        VidaText.text = vidaIA.ToString();
+        OroText.text = oro.ToString();
     }
 
     public void IA_Planta(Sprite img){
         CarIA = CarIAPlanta;
         Icono.GetComponent<Image>().sprite = img;
         EmpezarPartida();
+        nivel = 0;
     }
 
     public void IA_Humanos(Sprite img){
         CarIA = CarIAHumanos;
         Icono.GetComponent<Image>().sprite = img;
         EmpezarPartida();
+        nivel = 1;
     }
 
     public void IA_Goblins(Sprite img){
         CarIA = CarIAGoblins;
         Icono.GetComponent<Image>().sprite = img;
         EmpezarPartida();
+        nivel = 2;
     }
 
     public void IA_Criaturas(Sprite img){
         CarIA = CarIACriaturas;
         Icono.GetComponent<Image>().sprite = img;
         EmpezarPartida();
+        nivel = 3;
     }
 
     public void IA_Abismo(Sprite img){
         CarIA = CarIAAbismo;
         Icono.GetComponent<Image>().sprite = img;
         EmpezarPartida();
+        nivel = 4;
     }
 
     public void TurnoIA(){
@@ -84,7 +100,7 @@ public class CartasIA : MonoBehaviour
         int aux = nMano;
         for (int i = 0; i < aux; i++){
             if ((oro - ManoIA[i].GetComponent<AsignarCartaMano>().carta.oro) > 0){
-                Debug.Log("Tirar cartas");
+                Debug.Log(ManoIA[i].GetComponent<AsignarCartaMano>().carta.nombre);
                 oro -= ManoIA[i].GetComponent<AsignarCartaMano>().carta.oro;
                 //Se tiene que quitar de ManoIA
                 if(ManoIA[i].GetComponent<AsignarCartaMano>().carta.hechizo){
@@ -113,6 +129,7 @@ public class CartasIA : MonoBehaviour
             AtacarIA();
         }
         
+        OroText.text = oro.ToString();
         ct.botonAcabar.GetComponent<Button>().interactable = true;
         ct.EmpezarTurno();
     }
@@ -138,8 +155,9 @@ public class CartasIA : MonoBehaviour
             int dmg = ct.atacante.GetComponent<AsignarCartaMano>().aMomentaneo;
             Debug.Log("atacas a la ia");
             vidaIA -= dmg;
-            Vida.text = vidaIA.ToString();
+            VidaText.text = vidaIA.ToString();
             if(vidaIA < 1){
+                Estrellas[nivel].SetActive(true);
                 PanelGanar.SetActive(true);
                 db.dinero += 2000;
                 Debug.Log("Has ganado");
@@ -234,7 +252,8 @@ public class CartasIA : MonoBehaviour
                 }  
                 break;
             case "Bosque Sagrado":
-                SpawnArbol();
+                SpawnObjeto(cartaArbol);
+                SpawnObjeto(cartaArbol);
                 break;
             case "Susurra Amapolas":
                 AumentaStatsNombre("Amapola", 3, 0);
@@ -253,6 +272,10 @@ public class CartasIA : MonoBehaviour
                 break;  
             case "Hadas":
                 ct.RestarStats(2, 2, 0);
+                break;
+            case "Gobernador":
+                SpawnObjeto(cartaGuerrero);
+                SpawnObjeto(cartaEscudero);
                 break;
             default:
                 break;
@@ -277,24 +300,11 @@ public class CartasIA : MonoBehaviour
         }
     }
 
-    private void SpawnArbol(){
-        GameObject a1 = Instantiate(cartaArbol, Vector2.zero, Quaternion.identity);
+    private void SpawnObjeto(GameObject g){
+        GameObject a1 = Instantiate(g, Vector2.zero, Quaternion.identity);
         a1.transform.SetParent(this.transform);
         a1.transform.localScale = Vector3.one;
         CarTabIA.Add(a1);
-        GameObject a2 = Instantiate(cartaArbol, Vector2.zero, Quaternion.identity);
-        a2.transform.SetParent(this.transform);
-        a2.transform.localScale = Vector3.one;
-        CarTabIA.Add(a2);
-    }
-
-    private int MinMax(int posCarta){
-        //Devuleve si no atacar, recolectar oro o atacar al rival. (0,1,2)
-        int mejorMov = 0;
-        for (int i = 0; i < 3; i++){
-
-        }
-        return mejorMov;
     }
 
     private void AtacarIA(){
@@ -307,14 +317,23 @@ public class CartasIA : MonoBehaviour
                 oro += 5;
             }
             //Llamar minMax
-            int opcion = MinMax(i);
+            GameState currentState = new GameState
+            {
+                Jugador1 = new List<GameObject>(CarTabIA),
+                Jugador2 = new List<GameObject>(ct.mazo),
+                oro1 = oro,
+                oro2 = ct.mj.oro
+            };
+            GameObject aux = CarTabIA[i];
+            (int opcion, GameObject targetCard) = SelectBestMove(currentState, 2, aux);
+            Debug.Log("SelectBestMove: " + opcion + " " + targetCard.GetComponent<AsignarCartaMano>().carta.nombre);
 
-            if(opcion == 1){//ataca mina
+            /*if(opcion == 1){//ataca mina
                 oro += CarTabIA[i].GetComponent<AsignarCartaMano>().aMomentaneo;
             }
             else if(opcion == 2){
 
-            }
+            }*/
 
 
 
@@ -338,6 +357,7 @@ public class CartasIA : MonoBehaviour
         }
         
     }
+
     private void ATK(int i){
         if (oro > 50 && Random.value < 0.9f){
             ct.Defender(CarTabIA[i]);
@@ -347,6 +367,7 @@ public class CartasIA : MonoBehaviour
         }
         else if(oro > 10 && Random.value < 0.3f){
             ct.Defender(CarTabIA[i]);
+            Debug.Log("atacas a ct");
         }
         else {
             //atacar mina
@@ -372,5 +393,177 @@ public class CartasIA : MonoBehaviour
         oro = 30;
         vidaIA = 30;
     }
+
+
+    //Minimax
+
+    public class GameState{
+        public List<GameObject> Jugador1 { get; set; }//IA
+        public List<GameObject> Jugador2 { get; set; }//Rival
+        public int oro1 { get; set; }
+        public int oro2 { get; set; }
+    }
+
+    static int EvaluarEstado(GameState state)
+    {
+        //La suma de las defensas, el ataque i el oro que tenga cada uno, ademas de la diferencia de cartas
+        int resultado = 0;
+        resultado = state.oro1 - state.oro2;
+        for(int i = 0; i < state.Jugador1.Count; i++){
+            resultado += state.Jugador1[i].GetComponent<AsignarCartaMano>().aMomentaneo + state.Jugador1[i].GetComponent<AsignarCartaMano>().dMomentaneo + state.Jugador1[i].GetComponent<AsignarCartaMano>().carta.oro;
+        }
+        for(int i = 0; i < state.Jugador2.Count; i++){
+            resultado -= state.Jugador2[i].GetComponent<AsignarCartaMano>().aMomentaneo - state.Jugador2[i].GetComponent<AsignarCartaMano>().dMomentaneo - state.Jugador2[i].GetComponent<AsignarCartaMano>().carta.oro;
+        }
+        int diferencia = (state.Jugador1.Count - state.Jugador2.Count) * 2;
+        resultado += diferencia;
+        return resultado;
+    }
+
+    private int Minimax(GameState state, GameObject cardSelect, int depth, bool turnoIA){
+        //Devuleve si no atacar, recolectar oro o atacar al rival. (0,1,2), tambien que carta ataca
+        if (depth == 0 || state.Jugador1.Count < 1 || state.Jugador2.Count < 1){//cardSelect.GetComponent<AsignarCartaMano>().dMomentaneo <= 0
+            return EvaluarEstado(state);
+        }
+        if (turnoIA){
+            int bestScore = int.MinValue;
+            for (int i = 0; i < state.Jugador2.Count; i++){
+                //Ataca
+                GameState nextState = GenerateNextState(state, cardSelect, state.Jugador2[i], true, false);
+                int score = Minimax(nextState, cardSelect, depth - 1, false);
+                if(score > bestScore) bestScore = score;
+                //No ataca
+                GameState noAttackState = GenerateNextState(state, cardSelect, null, true, false);
+                score = Minimax(noAttackState, cardSelect, depth - 1, false);
+                if(score > bestScore) bestScore = score;
+                //Roba oro
+                GameState goldState = GenerateNextState(state, cardSelect, null, true, true);
+                score = Minimax(goldState, cardSelect, depth - 1, false);
+                if(score > bestScore) bestScore = score;
+            }
+            return bestScore;
+        }
+        else{
+            int bestScore = int.MaxValue;
+            for (int i = 0; i < state.Jugador2.Count; i++){
+                for (int j = 0; j < state.Jugador1.Count; j++){
+                    GameState nextState = GenerateNextState(state, state.Jugador2[i], state.Jugador1[j], false, false);
+                    int score = Minimax(nextState, cardSelect, depth - 1, true);
+                    if(score < bestScore) bestScore = score;
+                }
+                GameState noAttackState = GenerateNextState(state, state.Jugador1[i], null, false, false);
+                int scoreNoAttack = Minimax(noAttackState, cardSelect, depth - 1, true);
+                if(scoreNoAttack < bestScore) bestScore = scoreNoAttack;
+
+                GameState goldState = GenerateNextState(state, cardSelect, null, false, true);
+                int scoreGold = Minimax(goldState, cardSelect, depth - 1, true);
+                if(scoreGold < bestScore) bestScore = scoreGold;
+            }
+            return bestScore;
+        }
+    }
+    
+    public (int, GameObject) SelectBestMove(GameState state, int depth, GameObject cardSelect){
+        int maxEval = int.MinValue;
+        //attackingCard = null;
+        int opcion = 0;
+        GameObject targetCard = null;
+
+        // Considerar todas las posibles acciones: atacar, no atacar y Robar oro
+        for (int i = 0; i < state.Jugador2.Count; i++)
+        {
+            // Accion: Atacar   
+            GameState attackState = GenerateNextState(state, cardSelect, state.Jugador2[i], true, false);
+            int val1 = Minimax(attackState, cardSelect, depth, false);
+
+            if (val1 > maxEval)
+            {
+                maxEval = val1;
+                //attackingCard = card;
+                opcion = 1;
+                targetCard = state.Jugador2[i];
+            }
+
+            // Accion: No atacar
+            GameState noAttackState = GenerateNextState(state, cardSelect, null, true, false);
+            int val2 = Minimax(noAttackState, cardSelect, depth, false);
+
+            if (val2 > maxEval)
+            {
+                maxEval = val2;
+                //attackingCard = card;
+                opcion = 0;
+                targetCard = null;
+            }
+
+            //Robar oro
+            GameState playCardState = GenerateNextState(state, cardSelect, null, true, true);
+            int val3 = Minimax(playCardState, cardSelect, depth, false);
+
+            if (val3 > maxEval)
+            {
+                maxEval = val3;
+                //attackingCard = card;
+                opcion = 2;
+                targetCard = null;
+            }
+        }
+
+        return (opcion, targetCard);
+    }
+
+    public GameState GenerateNextState(GameState currentState, GameObject cardSelect, GameObject targetCard, bool isPlayerTurn, bool robarOro){
+
+        GameState nextState = new GameState
+        {
+            Jugador1 = new List<GameObject>(currentState.Jugador1),
+            Jugador2 = new List<GameObject>(currentState.Jugador2), 
+            oro1 = currentState.oro1,
+            oro2 = currentState.oro2
+        };
+
+
+        if (targetCard != null)
+        {
+            if (isPlayerTurn)
+            {
+                // Actualizar la carta atacante
+                targetCard.GetComponent<AsignarCartaMano>().dMomentaneo -= cardSelect.GetComponent<AsignarCartaMano>().aMomentaneo;
+
+                // Si la carta atacante queda con 0 o menos de salud, se retira del tablero
+                if (targetCard.GetComponent<AsignarCartaMano>().dMomentaneo <= 0)
+                {
+                    nextState.Jugador2.Remove(targetCard);
+                }
+            }
+            else
+            {
+                // Actualizar la carta atacante
+                targetCard.GetComponent<AsignarCartaMano>().dMomentaneo -= cardSelect.GetComponent<AsignarCartaMano>().aMomentaneo;
+
+                // Si la carta atacante queda con 0 o menos de salud, se retira del tablero
+                if (targetCard.GetComponent<AsignarCartaMano>().dMomentaneo <= 0)
+                {
+                    nextState.Jugador1.Remove(targetCard);
+                }
+            }
+        }
+
+        if (robarOro){
+
+            if (isPlayerTurn)
+            {
+                nextState.oro1 += cardSelect.GetComponent<AsignarCartaMano>().aMomentaneo; 
+            }
+            else
+            {
+                //nextState.oro2 += targetCard.GetComponent<AsignarCartaMano>().aMomentaneo;
+                nextState.oro2 += 3;
+            }
+        }
+
+        return nextState;
+    }
+
 }
 
