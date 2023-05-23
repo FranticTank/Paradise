@@ -7,7 +7,6 @@ using TMPro;
 public class CartasIA : MonoBehaviour
 {
 
-    public GameObject[] ManoIA = new GameObject[10];
     public GameObject CartaPrefab;
     public GameObject cartaArbol;
     public GameObject cartaGuerrero;
@@ -23,6 +22,8 @@ public class CartasIA : MonoBehaviour
     public List<Carta> CarIACriaturas = new List<Carta>();
     public List<Carta> CarIAAbismo = new List<Carta>();
 
+    public List<GameObject> ManoIA = new List<GameObject>();
+
     public List<GameObject> CarTabIA = new List<GameObject>();
 
     public List<GameObject> Estrellas = new List<GameObject>();
@@ -36,7 +37,6 @@ public class CartasIA : MonoBehaviour
     public TextMeshProUGUI OroText;
     public int oro = 30;
     public int vidaIA = 30;
-    private int nMano = 0;
 
     private int cartaComun = 1;
     private int cartaEpica = 3;
@@ -90,15 +90,12 @@ public class CartasIA : MonoBehaviour
         //atacar i acabar turno
         ct.botonAcabar.GetComponent<Button>().interactable = false;
 
-        if(nMano <= 9){
-            nMano++;
-            ObtenerCarta(nMano);
-            nMano++;
-            ObtenerCarta(nMano);
+        if(ManoIA.Count <= 9){
+            ObtenerCarta();
+            ObtenerCarta();
         }
 
-        int aux = nMano;
-        for (int i = 0; i < aux; i++){
+        for (int i = 0; i < ManoIA.Count; i++){
             if ((oro - ManoIA[i].GetComponent<AsignarCartaMano>().carta.oro) > 0){
                 Debug.Log(ManoIA[i].GetComponent<AsignarCartaMano>().carta.nombre);
                 oro -= ManoIA[i].GetComponent<AsignarCartaMano>().carta.oro;
@@ -115,7 +112,6 @@ public class CartasIA : MonoBehaviour
                     ManoIA[i].transform.localScale = Vector3.one;
                     CarTabIA.Add(ManoIA[i]);
                     Accion(ManoIA[i].GetComponent<AsignarCartaMano>().carta, ManoIA[i]);
-                    nMano--;
                 }
             }
         }
@@ -136,10 +132,8 @@ public class CartasIA : MonoBehaviour
 
     private void EmpezarPartida(){
         //si se da mas de una vez a jugar lo hace mas veces.
-        nMano = 7;
-        for (int i = 0; i <= nMano; i++){
-            Debug.Log("carta" + i);
-            ObtenerCarta(i);
+        for (int i = 0; i <= 7; i++){
+            ObtenerCarta();
         }
     }
 
@@ -208,14 +202,14 @@ public class CartasIA : MonoBehaviour
         }
     }
 
-    private void ObtenerCarta(int i){
+    private void ObtenerCarta(){
         //hay que cambiar para que no se vean las cartas de la ia i solo cuando las pone en el tablero
         int x = Random.Range(0, CarIA.Count);
         GameObject c = Instantiate(CartaPrefab, Vector2.zero, Quaternion.identity);
         c.transform.SetParent(zonaMano.transform);
         c.transform.localScale = Vector3.one;
-        ManoIA[i] = c;
-        ManoIA[i].GetComponent<AsignarCartaMano>().Asignar(CarIA[x]);
+        ManoIA.Add(c);
+        ManoIA[ManoIA.Count - 1].GetComponent<AsignarCartaMano>().Asignar(CarIA[x]);
     }
 
     private void Accion(Carta c, GameObject g){
@@ -231,24 +225,21 @@ public class CartasIA : MonoBehaviour
                 Destroy(g);
                 break;
             case "Goblin Explorador":
-                if(nMano <= 10){
-                    nMano++;
-                    ObtenerCarta(nMano);
+                if(ManoIA.Count < 10){
+                    ObtenerCarta();
                 }      
                 break;
             case "Kazulu":
-                if(nMano <= 10){
-                    nMano++;
-                    ObtenerCarta(nMano);
+                if(ManoIA.Count < 10){
+                    ObtenerCarta();
                 }      
                 break;
             case "Hechicero Goblin":
                 AumentaStats("Goblin", 1, 0);
                 break;
             case "Mercader":
-                if(nMano <= 10){
-                    nMano++;
-                    ObtenerCarta(nMano);
+                if(ManoIA.Count < 10){
+                    ObtenerCarta();
                 }  
                 break;
             case "Bosque Sagrado":
@@ -308,71 +299,44 @@ public class CartasIA : MonoBehaviour
     }
 
     private void AtacarIA(){
-        int dif = CarTabIA.Count - ct.mazo.Count;
-        for (int i = 0; i < CarTabIA.Count; i++){//Mirar si vale la pena atacar o dejar alguna para defender
+        int dif = 0;
+        for (int i = 0; i < CarTabIA.Count; i++){
+            Debug.Log("Index: " + i + " Tamaño: " + CarTabIA.Count);
+            dif = CarTabIA.Count - ct.mazo.Count;
             if(CarTabIA[i].GetComponent<AsignarCartaMano>().carta.nombre == "Recolector Oro"){
                 oro += 3;
             }
             else if(CarTabIA[i].GetComponent<AsignarCartaMano>().carta.nombre == "Fabrica Oro"){
                 oro += 5;
             }
-            //Llamar minMax
-            GameState currentState = new GameState
-            {
-                Jugador1 = new List<GameObject>(CarTabIA),
-                Jugador2 = new List<GameObject>(ct.mazo),
-                oro1 = oro,
-                oro2 = ct.mj.oro
-            };
-            GameObject aux = CarTabIA[i];
-            (int opcion, GameObject targetCard) = SelectBestMove(currentState, 2, aux);
-            Debug.Log("SelectBestMove: " + opcion + " " + targetCard.GetComponent<AsignarCartaMano>().carta.nombre);
+            else{//Llamar minMax
 
-            /*if(opcion == 1){//ataca mina
-                oro += CarTabIA[i].GetComponent<AsignarCartaMano>().aMomentaneo;
-            }
-            else if(opcion == 2){
-
-            }*/
-
-
-
-
-            if(ct.mazo.Count < 1){
-                ATK(i);
-            }
-            else{
-                if(dif > 0){
-                    if(Random.value < 0.8f){
-                        ATK(i);
-                    }
-                }
+                if(ct.mazo.Count < 1) ct.Defender(CarTabIA[i]);
                 else{
-                    if(Random.value < 0.3f){
-                        ATK(i);
+
+                    GameState currentState = new GameState
+                    {
+                        Jugador1 = new List<GameObject>(),
+                        Jugador2 = new List<GameObject>(),
+                        oro1 = oro,
+                        oro2 = ct.mj.oro
+                    };
+                    for(int j = 0; j < CarTabIA.Count; j++){
+                        currentState.Jugador1.Add(CarTabIA[j]);
                     }
+                    for(int j = 0; j < ct.mazo.Count; j++){
+                        currentState.Jugador2.Add(ct.mazo[j]);
+                    }
+
+                    GameObject aux = CarTabIA[i];
+                    (int opcion, GameObject targetCard) = SelectBestMove(currentState, 2, aux);
+                    Debug.Log("SelectBestMove: " + opcion + " " + targetCard.GetComponent<AsignarCartaMano>().carta.nombre);
+
+                    if(opcion == 1) ct.Defender(CarTabIA[i]);
+                    else if(opcion == 2) oro += CarTabIA[i].GetComponent<AsignarCartaMano>().aMomentaneo;
                 }
             }
-            //Esperar 1 segundo entre ataques     
-        }
-        
-    }
-
-    private void ATK(int i){
-        if (oro > 50 && Random.value < 0.9f){
-            ct.Defender(CarTabIA[i]);
-        }
-        else if(oro > 30 && Random.value < 0.6f){
-            ct.Defender(CarTabIA[i]);
-        }
-        else if(oro > 10 && Random.value < 0.3f){
-            ct.Defender(CarTabIA[i]);
-            Debug.Log("atacas a ct");
-        }
-        else {
-            //atacar mina
-            oro += CarTabIA[i].GetComponent<AsignarCartaMano>().aMomentaneo;
-            //CarTabIA[i].GetComponent<Button>().interactable = false;
+   
         }
         
     }
@@ -383,13 +347,13 @@ public class CartasIA : MonoBehaviour
             GameObject g = CarTabIA[i];
             Destroy(g);
         }
-        CarTabIA.Clear();
-        for(int i = 0; i < 10; i++){
-            if(ManoIA[i] != null){
-                GameObject o = ManoIA[i];
-                Destroy(o);
-            } 
+        aux = ManoIA.Count;
+        for(int i = 0; i < aux; i++){
+            GameObject g = ManoIA[i];
+            Destroy(g);
         }
+        CarTabIA.Clear();
+        ManoIA.Clear();
         oro = 30;
         vidaIA = 30;
     }
@@ -422,7 +386,7 @@ public class CartasIA : MonoBehaviour
 
     private int Minimax(GameState state, GameObject cardSelect, int depth, bool turnoIA){
         //Devuleve si no atacar, recolectar oro o atacar al rival. (0,1,2), tambien que carta ataca
-        if (depth == 0 || state.Jugador1.Count < 1 || state.Jugador2.Count < 1){//cardSelect.GetComponent<AsignarCartaMano>().dMomentaneo <= 0
+        if (depth == 0){//cardSelect.GetComponent<AsignarCartaMano>().dMomentaneo <= 0  || state.Jugador1.Count < 1 || state.Jugador2.Count < 1
             return EvaluarEstado(state);
         }
         if (turnoIA){
