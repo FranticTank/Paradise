@@ -21972,9 +21972,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CartaPrefab: {fileID: 7404775861178751340, guid: 8fe0e4eab765c4d4681bb99350e86eeb, type: 3}
-  cartaArbol: {fileID: 7404775861178751340, guid: 62831aa9090f5084f80ebb7a1291c2de, type: 3}
-  cartaGuerrero: {fileID: 7404775861178751340, guid: 3d10a91c8842c5d4cb48d4fa8d479558, type: 3}
-  cartaEscudero: {fileID: 7404775861178751340, guid: 8ba2e1ae21583b842b56896ef71ec487, type: 3}
+  cartaArbol: {fileID: 7404775861178751340, guid: 99d5c681030687e4d9663df6f866462c, type: 3}
+  cartaGuerrero: {fileID: 7404775861178751340, guid: 66794ea695ab1ea40844c3f174274e1a, type: 3}
+  cartaEscudero: {fileID: 7404775861178751340, guid: 92431e1e1e272e740a7d11ae440a3d48, type: 3}
   zonaMano: {fileID: 541225764}
   PanelGanar: {fileID: 1880509181}
   CarIA: []

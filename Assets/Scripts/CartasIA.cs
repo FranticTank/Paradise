@@ -41,6 +41,7 @@ public class CartasIA : MonoBehaviour
     private int cartaComun = 1;
     private int cartaEpica = 3;
     private int cartaLegendaria = 5;
+    private bool turno1 = true;
 
     // Start is called before the first frame update
     void Start()
@@ -120,11 +121,13 @@ public class CartasIA : MonoBehaviour
             CarTabIA[i].GetComponent<Button>().interactable = true;
         }
 
-        if(CarTabIA != null){
+        if(CarTabIA != null && !turno1){
             Debug.Log("AtacarIA");
             AtacarIA();
         }
+        else if(turno1) turno1 = false;
         
+        oro += 5;
         OroText.text = oro.ToString();
         ct.botonAcabar.GetComponent<Button>().interactable = true;
         ct.EmpezarTurno();
@@ -154,6 +157,7 @@ public class CartasIA : MonoBehaviour
                 Estrellas[nivel].SetActive(true);
                 PanelGanar.SetActive(true);
                 db.dinero += 2000;
+                db.RefrescarDinero();
                 Debug.Log("Has ganado");
             }
             ct.CartaUsada(true);
@@ -208,11 +212,12 @@ public class CartasIA : MonoBehaviour
         GameObject c = Instantiate(CartaPrefab, Vector2.zero, Quaternion.identity);
         c.transform.SetParent(zonaMano.transform);
         c.transform.localScale = Vector3.one;
+        c.GetComponent<AsignarCartaMano>().Asignar(CarIA[x]);
         ManoIA.Add(c);
-        ManoIA[ManoIA.Count - 1].GetComponent<AsignarCartaMano>().Asignar(CarIA[x]);
     }
 
     private void Accion(Carta c, GameObject g){
+        ManoIA.Remove(g);
         switch (c.nombre)
         {
             case "Florecimiento":
@@ -480,11 +485,18 @@ public class CartasIA : MonoBehaviour
 
         GameState nextState = new GameState
         {
-            Jugador1 = new List<GameObject>(currentState.Jugador1),
-            Jugador2 = new List<GameObject>(currentState.Jugador2), 
+            Jugador1 = new List<GameObject>(),
+            Jugador2 = new List<GameObject>(), 
             oro1 = currentState.oro1,
             oro2 = currentState.oro2
         };
+
+        for(int i = 0; i < currentState.Jugador1.Count; i++){
+            nextState.Jugador1.Add(currentState.Jugador1[i]);
+        }
+        for(int i = 0; i < currentState.Jugador2.Count; i++){
+            nextState.Jugador2.Add(currentState.Jugador2[i]);
+        }
 
 
         if (targetCard != null)

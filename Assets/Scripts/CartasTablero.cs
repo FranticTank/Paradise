@@ -90,6 +90,7 @@ public class CartasTablero : MonoBehaviour
         Debug.Log("atacas: "+dmg);
         if(g.GetComponent<AsignarCartaMano>().carta.nombre == "Gran Arbol"){
             ci.vidaIA += dmg;
+            ci.VidaText.text = ci.vidaIA.ToString();
         }
         else if(g.GetComponent<AsignarCartaMano>().carta.nombre == "Pandilleros" || g.GetComponent<AsignarCartaMano>().carta.nombre == "Goblin Ladron"){
             int oroRobado = dmg;
@@ -123,6 +124,7 @@ public class CartasTablero : MonoBehaviour
             if(mj.vida < 1){
                 PanelPerder.SetActive(true);
                 db.dinero += 1000;
+                db.RefrescarDinero();
             }
         }
         else{//mirar que ataque con prioridad a alguien bajo de vida

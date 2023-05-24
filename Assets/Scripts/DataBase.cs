@@ -30,13 +30,17 @@ public class DataBase : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Tdinero.text = dinero.ToString();
+        RefrescarDinero();
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void RefrescarDinero(){
+        Tdinero.text = dinero.ToString();
     }
 
     public void eliminarCartaMazo(Carta c){
